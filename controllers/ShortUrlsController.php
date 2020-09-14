@@ -2,6 +2,7 @@
 
 namespace app\controllers;
 
+use app\models\Statistic;
 use Yii;
 use app\models\ShortUrls;
 use app\models\ShortUrlsSearch;
@@ -59,25 +60,29 @@ class ShortUrlsController extends Controller
     public function actionForward($code)
     {
         $url = ShortUrls::validateShortCode($code);
-
         $url->updateCounters(['counter' => 1]);
 
+        //search for existing record if there is no record for that day and url we will create new record
+        $stats = Statistic::find()
+            ->where(['short_url_id' => $url['id']])
+            ->andWhere(['between', 'date', date("Y-m-d H:i:s", strtotime('midnight')), date('Y-m-d H:i:s', strtotime('+1 day'))])
+            ->one();
+
+        if($stats == null){
+
+            $stats = new Statistic();
+
+            $stats->setAttributes(
+                [
+                    'count' => 1,
+                    'short_url_id' => $url['id'],
+                ]
+            );
+            $stats->save();
+        }else{
+            $stats->updateCounters(['counter' => 1]);
+        }
+
         return $this->redirect($url['long_url']);
-    }
-
-    /**
-     * @param $code
-     * @return string
-     * @throws \yii\web\HttpException
-     * @throws \yii\web\NotAcceptableHttpException
-     * @throws \yii\web\NotFoundHttpException
-     */
-    public function actionStatistic($code)
-    {
-        $url = ShortUrls::validateShortCode($code);
-
-        return $this->render('statistic', [
-            'url' => $url
-        ]);
     }
 }

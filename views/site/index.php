@@ -11,7 +11,6 @@ $this->title = 'My Yii Application';
 
     <div class="row">
         <div class="col-xs-12 col-lg-7 jumbotron">
-
             <?php $form = ActiveForm::begin(['action' => Url::to(['/short-urls/add'])]); ?>
 
             <?= $form->field($model_url, 'long_url')
@@ -82,7 +81,7 @@ $this->title = 'My Yii Application';
                                             </td>
                                             <td class="text-center">
                                                 <a href="<?=  Url::to(['short-urls/forward', 'code' => $url->short_code]) ?>" target="_blank">
-                                                    <?=  Url::to(['short-urls/f', 'c' => $url->short_code], true) ?>
+                                                    <?=  Url::to(['short-urls/forward', 'code' => $url->short_code], true) ?>
                                                 </a>
                                             </td>
                                         </tr>
